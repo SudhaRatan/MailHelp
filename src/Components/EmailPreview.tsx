@@ -16,38 +16,28 @@ export const EmailPreview = ({ mail }: EmailPreviewProps) => {
   // const [mail1, setMail] = useState<mail | null>(null);
 
   const getMailData = async () => {
-    const mailData = mails?.find(i => i.id == mail.id)
-    if(!mailData?.receivedDateTime){
-      
+    const mailData = mails?.find((i) => i.id == mail.id);
+    if (!mailData?.receivedDateTime) {
       const res = await axios.get(API_URL + `/mailData/${mail.id}`);
-      console.log(res);
-    //   setMail({
-    //     id: mail.id,
-    //   receivedDateTime: res.data.date,
-    //   threadId: mail.threadId,
-    //   fromName: res.data.from.value[0].name,
-    //   mailBodyHtml: res.data.html,
-    //   mailBodyText: res.data.snippet,
-    //   subject: res.data.subject,
-    // });
-    updateMail({
-      id: mail.id,
-    receivedDateTime: res.data.date,
-    threadId: mail.threadId,
-    fromName: res.data.from.value[0].name,
-    mailBodyHtml: res.data.html,
-    mailBodyText: res.data.snippet,
-    subject: res.data.subject,
-  })
-  }
+      updateMail({
+        id: mail.id,
+        receivedDateTime: res.data.date,
+        threadId: mail.threadId,
+        fromName: res.data.from.value[0].name,
+        mailBodyHtml: res.data.html,
+        mailBodyText: res.data.snippet,
+        subject: res.data.subject,
+        historyId: res.data.historyId,
+      });
+    }
   };
 
   useEffect(() => {
     getMailData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  if(!mail?.receivedDateTime){
-    return null
+  if (!mail?.receivedDateTime) {
+    return null;
   }
   return (
     <div
@@ -66,7 +56,9 @@ export const EmailPreview = ({ mail }: EmailPreviewProps) => {
       <div className="text-ellipsis overflow-hidden whitespace-nowrap">
         {mail?.subject}
       </div>
-      <div className="text-ellipsis overflow-hidden whitespace-nowrap font-light">{mail?.mailBodyText?.slice(0,100)}</div>
+      <div className="text-ellipsis overflow-hidden whitespace-nowrap font-light">
+        {mail?.mailBodyText?.slice(0, 100)}
+      </div>
     </div>
   );
 };

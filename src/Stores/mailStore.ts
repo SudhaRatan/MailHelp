@@ -3,6 +3,7 @@ import { create } from "zustand";
 export interface mail {
   id: string;
   threadId: string;
+  historyId?: string;
   fromName?: string;
   fromAddress?: string;
   to?: string;
@@ -25,6 +26,7 @@ export interface mailStore {
   mailsPerPage: number;
   setMailsPerPage: (n: number) => void;
   updateMail: (mail: mail) => void;
+  addNewMails: (mails: mail[]) => void;
 }
 
 export const useMailStore = create<mailStore>()((set, get) => ({
@@ -55,5 +57,10 @@ export const useMailStore = create<mailStore>()((set, get) => ({
         else return i;
       }),
     });
+  },
+  addNewMails(mails) {
+    const oldMails = get().mails;
+    if (oldMails) set({ mails: [...mails, ...oldMails.slice(0,oldMails.length - mails.length)] });
+    else set({ mails: mails });
   },
 }));

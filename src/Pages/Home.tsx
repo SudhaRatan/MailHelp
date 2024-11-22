@@ -2,7 +2,7 @@ import { googleLogout } from "@react-oauth/google";
 import { CiLogout } from "react-icons/ci";
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import { useAuthStore } from "../Stores/authStore";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { GoSidebarExpand } from "react-icons/go";
 import colors from "tailwindcss/colors";
 import { CiInboxIn } from "react-icons/ci";
@@ -10,6 +10,9 @@ import { useMailStore } from "../Stores/mailStore";
 import { EmailPreview } from "../Components/EmailPreview";
 import { MailShow } from "../Components/MailShow";
 import { Pagination } from "../Components/Pagination";
+import socket from "../Utils/Socket";
+import axios from "axios";
+import { API_URL } from "../Constants/config";
 
 export const Home = () => {
   const setToken = useAuthStore((state) => state.setToken);
@@ -17,6 +20,7 @@ export const Home = () => {
   const tokenInfo = useAuthStore((state) => state.tokenInfo);
 
   const mails = useMailStore((state) => state.mails);
+  const addNewMails = useMailStore((state) => state.addNewMails);
   const setSelectedMail = useMailStore((state) => state.setSelectedMail);
   const setNextPageToken = useMailStore((state) => state.setNextPageToken);
   const setPage = useMailStore((s) => s.setPage);
@@ -26,23 +30,56 @@ export const Home = () => {
 
   const [listWidth, setListWidth] = useState<number | null | undefined>(null);
 
-  const logout = () => {
+  const logout = async () => {
     googleLogout();
     setToken("");
     setTokenInfo(null);
     setSelectedMail(null);
-    setMails(null)
-    setNextPageToken(null)
-    setPage(0)
+    setMails(null);
+    setNextPageToken(null);
+    setPage(0);
+    await axios.get(`${API_URL}/logout`);
   };
 
+  const mailListRef = useRef<HTMLElement>(null);
 
-  
-  const mailListRef = useRef<HTMLElement | null>(null);
+  const getHistoryMessages = async () => {
+    const ms = useMailStore.getState().mails;
+    type h = {
+      messagesAdded: string;
+      message: string;
+    };
+    if (ms) {
+      const historyId = ms[0].historyId;
+      const response = await axios.get(`${API_URL}/getNew/${historyId}`);
+      console.log(
+        response.data.history
+          .flatMap((i: h) => i.messagesAdded)
+          .filter((i: h) => i != undefined)
+          .flatMap((i: h) => i.message)
+      );
+      addNewMails(
+        response.data.history
+          .flatMap((i: h) => i.messagesAdded)
+          .filter((i: h) => i != undefined)
+          .flatMap((i: h) => i.message)
+      );
+    }
+  };
 
   useEffect(() => {
     if (listWidth === null) setListWidth(mailListRef?.current?.offsetWidth);
-    /* eslint-disable react-hooks/exhaustive-deps */
+    socket.connect();
+
+    socket.on("connect", function () {
+      console.log("Connected to server");
+      socket.emit("join", { email: tokenInfo?.email });
+    });
+
+    socket.on("notification", function (data) {
+      console.log(data);
+      getHistoryMessages();
+    });
   }, []);
 
   return (
@@ -96,7 +133,7 @@ export const Home = () => {
           className={`border-r flex-[3] flex flex-col max-h-[100dvh] ${
             listWidth != null ? `max-w-[${listWidth}] w-[${listWidth}]` : ""
           } overflow-hidden`}
-          ref={mailListRef}
+          ref={mailListRef as RefObject<HTMLDivElement>}
         >
           {/* Inbox header */}
           <div className="flex justify-between p-3 border-b-2 items-center">
@@ -121,15 +158,19 @@ export const Home = () => {
           {mails ? (
             mails.length > 0 ? (
               <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                {mails.slice(page * mailsPerPage,(page + 1) * mailsPerPage  ).map((mail) => {
-                  return <EmailPreview mail={mail} key={mail.id} />;
-                })}
+                {mails
+                  .slice(page * mailsPerPage, (page + 1) * mailsPerPage)
+                  .map((mail) => {
+                    return <EmailPreview mail={mail} key={mail.id} />;
+                  })}
               </div>
             ) : (
               <div className="flex w-full h-full">No mails</div>
             )
           ) : (
-            <div className="flex w-full h-full justify-center items-center"><div className="loading loading-ring loading-lg"></div></div>
+            <div className="flex w-full h-full justify-center items-center">
+              <div className="loading loading-ring loading-lg"></div>
+            </div>
           )}
           <Pagination />
         </div>

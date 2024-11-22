@@ -24,9 +24,8 @@ export const Pagination = () => {
   const [nextLoading, setNextLoading] = useState(false);
 
   const nextPage = async () => {
-    setSelectedMail(null)
-    console.log(mails?.length, mailsPerPage, page)
-    if (mails && (mails?.length / mailsPerPage > page + 1)) {
+    setSelectedMail(null);
+    if (mails && mails?.length / mailsPerPage > page + 1) {
       setPage(page + 1);
     } else {
       setNextLoading(true);
@@ -37,7 +36,7 @@ export const Pagination = () => {
   };
 
   const prevPage = () => {
-    setSelectedMail(null)
+    setSelectedMail(null);
     if (page > 0) {
       setPage(page - 1);
     }
@@ -47,9 +46,10 @@ export const Pagination = () => {
     try {
       const res = await axios.get(
         API_URL +
-          `/getMails${nextPageToken ? `?nextPageToken=${nextPageToken}` : ""}`
+          `/getMails?max=${mailsPerPage}${
+            nextPageToken ? `&nextPageToken=${nextPageToken}` : ""
+          }`
       );
-      console.log(res);
       if (mails == null) setMails(res.data.messages);
       else setMails([...mails, ...res.data.messages]);
       setNextPageToken(res.data.nextPageToken);
