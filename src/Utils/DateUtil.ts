@@ -25,3 +25,34 @@ export function formatDate(isoDateString: string) {
     return `${inputDate.toLocaleDateString('en-US', dayOptions)} ${formattedDate}`;
   }
 }
+
+export function formatDateCustom(isoDateString: string) {
+  const date = new Date(isoDateString);
+  
+  // Array of month names
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 
+    'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+  
+  // Function to get ordinal suffix
+  const getOrdinalSuffix = (day: number) => {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+  
+  // Format components
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  const formattedHours = (hours % 12 || 12).toString();
+  
+  return `${day}${getOrdinalSuffix(day)} ${month} at ${formattedHours}:${minutes}${ampm}`;
+}

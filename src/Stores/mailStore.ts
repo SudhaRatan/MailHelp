@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 export interface mail {
   id: string;
-  threadId: string;
+  threadId?: string;
   historyId?: string;
   fromName?: string;
   fromAddress?: string;
@@ -11,6 +11,9 @@ export interface mail {
   subject?: string;
   mailBodyText?: string;
   mailBodyHtml?: string;
+  mailText?: string;
+  repliedText?: string;
+  resolved?: number
 }
 
 export interface mailStore {
@@ -27,6 +30,8 @@ export interface mailStore {
   setMailsPerPage: (n: number) => void;
   updateMail: (mail: mail) => void;
   addNewMails: (mails: mail[]) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateReply: (reply: any) => void;
 }
 
 export const useMailStore = create<mailStore>()((set, get) => ({
@@ -60,7 +65,14 @@ export const useMailStore = create<mailStore>()((set, get) => ({
   },
   addNewMails(mails) {
     const oldMails = get().mails;
-    if (oldMails) set({ mails: [...mails, ...oldMails.slice(0,oldMails.length - mails.length)] });
+    if (oldMails)
+      set({
+        mails: [...mails, ...oldMails.slice(0, oldMails.length - mails.length)],
+      });
     else set({ mails: mails });
+  },
+  updateReply(reply) {
+    const mail = get().selectedMail;
+    set({ selectedMail: { ...mail, repliedText: reply.sentReply, resolved: reply.resolved } as mail });
   },
 }));

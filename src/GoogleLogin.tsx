@@ -29,12 +29,11 @@ export default function GoogleLogin() {
         setAuth(false)
         console.warn(error);
       });
-    console.log(response);
   };
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => {
-      console.log(tokenResponse);
+      // console.log(tokenResponse);
       setAuth(true)
       serverAuth(tokenResponse.access_token);
     },
@@ -48,7 +47,7 @@ export default function GoogleLogin() {
     <div>
       <button
       disabled={auth}
-        className="btn"
+        className="btn bg-transparent border-purple-800"
         onClick={() => {
           login();
         }}
@@ -60,8 +59,8 @@ export default function GoogleLogin() {
           </>
         ) : (
           <>
-            <FaGoogle />
-            Google login
+              <FaGoogle />
+              <p className="text-purple-800">Google login</p>
           </>
         )}
       </button>
