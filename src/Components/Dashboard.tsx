@@ -8,6 +8,7 @@ import axios from "axios";
 import { API_URL } from "../Constants/config";
 import PercentagePieChart from "./PercentagePieChart";
 import BarChartExample from "./BarchartEx";
+import { generatePDF } from "../Utils/GeneratePdf";
 
 function Dashboard() {
   const [data, setData] = useState<any>([]);
@@ -47,18 +48,21 @@ function Dashboard() {
     setData(transformData(res.data.recordset));
     console.log(transformData(res.data.recordset));
   };
+
   useEffect(() => {
     getData();
   }, [weeklyRange]);
 
   return (
-    <div className="flex-1 p-5 flex flex-wrap overflow-auto ">
+    <div className="flex-1 p-5 flex flex-wrap overflow-auto" id="Dashboard">
       <div className="flex w-full justify-between">
         <div className="text-xl">Dashboard</div>
         <WeekRangeSwitcher onRangeChange={(range) => setWR(range)} />
       </div>
       <div>
-        <div className="text-lg font-semibold m-2">Weekly Email Status Chart</div>
+        <div className="text-lg font-semibold m-2">
+          Weekly Email Status Chart
+        </div>
         <BarChart
           width={window.innerWidth * 0.75}
           height={window.innerHeight * 0.3}
@@ -80,9 +84,20 @@ function Dashboard() {
         <PercentagePieChart data={data} />
       </div>
       <div>
-        <BarChartExample 
-        data={data.map((i:any) => ({name:i.name, total: Number(i.resolved)+Number(i.unresolved)}))}
-         />
+        <BarChartExample
+          data={data.map((i: any) => ({
+            name: i.name,
+            total: Number(i.resolved) + Number(i.unresolved),
+          }))}
+        />
+      </div>
+      <div
+        className="btn btn-success absolute bottom-3 right-3"
+        onClick={() => {
+          generatePDF("Dashboard")
+        }}
+      >
+        Download as PDF
       </div>
     </div>
   );
