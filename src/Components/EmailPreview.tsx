@@ -28,7 +28,7 @@ export const EmailPreview = ({ mail }: EmailPreviewProps) => {
     if (!mailData?.receivedDateTime) {
       const res = await axios.get(API_URL + `/mailData/${mail.id}`);
       console.log(res);
-      if (res.data.from.value[0].address != tokenInfo?.email) {
+      // if (res.data.from.value[0].address != tokenInfo?.email) {
         updateMail({
           id: mail.id,
           receivedDateTime: res.data.date,
@@ -49,9 +49,9 @@ export const EmailPreview = ({ mail }: EmailPreviewProps) => {
         });
         const { categoryId, mailId, aiResponse } = aiRes.data;
         addResponse({ categoryId, mailId, aiResponse: JSON.parse(aiResponse) });
-      } else {
-        deleteMail(mail.id);
-      }
+      // } else {
+      //   deleteMail(mail.id);
+      // }
     }
   };
 

@@ -51,7 +51,7 @@ export const useMailStore = create<mailStore>()((set, get) => ({
   },
   page: 0,
   setPage: (n) => set({ page: n }),
-  mailsPerPage: 10,
+  mailsPerPage: 20,
   setMailsPerPage(n) {
     set({ mailsPerPage: n });
   },

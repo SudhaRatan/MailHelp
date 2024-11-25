@@ -27,7 +27,8 @@ export const Pagination = ({ category }: PaginationType) => {
 
   const [nextLoading, setNextLoading] = useState(false);
   const categories = useCategoryStore((s) => s.categories);
-  console.log(mails, nextPageToken)
+  const [canNavigate, setCanNavigate] = useState(true);
+  console.log(mails, nextPageToken);
 
   const nextPage = async () => {
     setSelectedMail(null);
@@ -35,12 +36,18 @@ export const Pagination = ({ category }: PaginationType) => {
       setPage(page + 1);
     } else {
       setNextLoading(true);
-      if (category === "Inbox") await getMails(true);
-      else {
+      if (category === "Inbox") {
+        if (canNavigate) {
+          await getMails(true);
+          setPage(page + 1);
+        } else {
+          alert("End of list");
+        }
+      } else {
         await getMailsByCategory(page + 1, true);
+        setPage(page + 1);
       }
       setNextLoading(false);
-      setPage(page + 1);
     }
   };
 
@@ -60,14 +67,17 @@ export const Pagination = ({ category }: PaginationType) => {
             nextPageToken ? `&nextPageToken=${nextPageToken}` : ""
           }`
       );
-      console.log(res.data)
+      console.log(res.data);
       if (res.data.resultSizeEstimate == 0) {
         // setMails([]);
       } else {
         if (mails != null && pagination)
           setMails([...mails, ...res.data.messages]);
         else setMails(res.data.messages);
-        setNextPageToken(res.data.nextPageToken);
+        if (res.data.nextPageToken) setNextPageToken(res.data.nextPageToken);
+        else {
+          setCanNavigate(false);
+        }
         console.log(res.data);
       }
     } catch (error) {
@@ -113,6 +123,9 @@ export const Pagination = ({ category }: PaginationType) => {
     axios.defaults.headers.get["x-access-token"] = token;
     setMails(null);
     console.log("asd");
+    setPage(0);
+    setCanNavigate(true);
+    setNextPageToken(null);
     (async () => {
       if (category == "Inbox") {
         await getMails(false);
@@ -122,7 +135,7 @@ export const Pagination = ({ category }: PaginationType) => {
     })();
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [category]);
-  console.log(mails)
+  console.log(mails);
 
   return (
     <div className="shadow-inner p-1 flex justify-end items-center gap-4">
