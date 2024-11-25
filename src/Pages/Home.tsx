@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { googleLogout } from "@react-oauth/google";
 import { CiLogout } from "react-icons/ci";
@@ -71,12 +72,20 @@ export const Home = () => {
           .flatMap((i: h) => i.messagesAdded)
           .filter((i: h) => i != undefined)
           .flatMap((i: h) => i.message)
+          .filter((message: any) => {
+            // Check if the message is not from your email
+            return !message.labelIds.includes("SENT");
+          })
       );
       addNewMails(
         response.data.history
           .flatMap((i: h) => i.messagesAdded)
           .filter((i: h) => i != undefined)
           .flatMap((i: h) => i.message)
+          .filter((message: any) => {
+            // Check if the message is not from your email
+            return !message.labelIds.includes("SENT");
+          })
       );
     }
   };
@@ -161,7 +170,9 @@ export const Home = () => {
             {/* <div className="text-xs text-violet-700">123</div> */}
           </div>
           <div
-            className={`btn flex pl-2 gap-2 items-center m-2 text-lg justify-start font-normal ${showDashboard ? "btn text-purple-700" : "btn-ghost "}`}
+            className={`btn flex pl-2 gap-2 items-center m-2 text-lg justify-start font-normal ${
+              showDashboard ? "btn text-purple-700" : "btn-ghost "
+            }`}
             onClick={() => setDash(!showDashboard)}
           >
             <TbDeviceDesktopAnalytics size={20} />
@@ -188,7 +199,7 @@ export const Home = () => {
             {categories?.map((category) => {
               return (
                 <CategoryItem
-                showDashboard={showDashboard}
+                  showDashboard={showDashboard}
                   click={() => setDash(false)}
                   category={selectedCategory}
                   setCategory={setSelectedCategory}

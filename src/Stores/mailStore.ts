@@ -29,6 +29,7 @@ export interface mailStore {
   mailsPerPage: number;
   setMailsPerPage: (n: number) => void;
   updateMail: (mail: mail) => void;
+  deleteMail: (mailId: string) => void;
   addNewMails: (mails: mail[]) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateReply: (reply: any) => void;
@@ -50,7 +51,7 @@ export const useMailStore = create<mailStore>()((set, get) => ({
   },
   page: 0,
   setPage: (n) => set({ page: n }),
-  mailsPerPage: 20,
+  mailsPerPage: 10,
   setMailsPerPage(n) {
     set({ mailsPerPage: n });
   },
@@ -62,6 +63,10 @@ export const useMailStore = create<mailStore>()((set, get) => ({
         else return i;
       }),
     });
+  },
+  deleteMail(mailId) {
+      const mails = get().mails
+      set({mails: mails?.filter(mail => mail.id != mailId)})
   },
   addNewMails(mails) {
     const oldMails = get().mails;

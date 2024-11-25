@@ -6,6 +6,7 @@ import { formatDate } from "../Utils/DateUtil";
 import { useAiResponsesStore } from "../Stores/aiResponsesStore";
 import { LuDot } from "react-icons/lu";
 import colors from "tailwindcss/colors";
+import { useAuthStore } from "../Stores/authStore";
 
 interface EmailPreviewProps {
   mail: mail;
@@ -14,37 +15,43 @@ interface EmailPreviewProps {
 export const EmailPreview = ({ mail }: EmailPreviewProps) => {
   const mails = useMailStore((s) => s.mails);
   const updateMail = useMailStore((s) => s.updateMail);
+  const deleteMail = useMailStore((s) => s.deleteMail);
   const setSelectedMail = useMailStore((s) => s.setSelectedMail);
   const selectedMail = useMailStore((s) => s.selectedMail);
   const updateReply = useMailStore((s) => s.updateReply);
   const addResponse = useAiResponsesStore((s) => s.addResponse);
   const [read, setRead] = useState<boolean>(true);
+  const tokenInfo = useAuthStore((state) => state.tokenInfo);
 
   const getMailData = async () => {
     const mailData = mails?.find((i) => i.id == mail.id);
     if (!mailData?.receivedDateTime) {
       const res = await axios.get(API_URL + `/mailData/${mail.id}`);
       console.log(res);
-      updateMail({
-        id: mail.id,
-        receivedDateTime: res.data.date,
-        threadId: mail.threadId,
-        fromName: res.data.from.value[0].name,
-        fromAddress: res.data.from.value[0].address,
-        mailBodyHtml: res.data.html,
-        mailBodyText: res.data.snippet,
-        mailText: res.data.text,
-        subject: res.data.subject,
-        historyId: res.data.historyId,
-        resolved: res.data.resolved,
-      });
-      setRead(res.data.read === 1);
-      const aiRes = await axios.post(`${API_URL}/getAiResponse`, {
-        mailId: mail.id,
-        mailText: `Subject: ${res.data.subject}, Body: ${res.data.text}`,
-      });
-      const { categoryId, mailId, aiResponse } = aiRes.data;
-      addResponse({ categoryId, mailId, aiResponse: JSON.parse(aiResponse) });
+      if (res.data.from.value[0].address != tokenInfo?.email) {
+        updateMail({
+          id: mail.id,
+          receivedDateTime: res.data.date,
+          threadId: mail.threadId,
+          fromName: res.data.from.value[0].name,
+          fromAddress: res.data.from.value[0].address,
+          mailBodyHtml: res.data.html,
+          mailBodyText: res.data.snippet,
+          mailText: res.data.text,
+          subject: res.data.subject,
+          historyId: res.data.historyId,
+          resolved: res.data.resolved,
+        });
+        setRead(res.data.read === 1);
+        const aiRes = await axios.post(`${API_URL}/getAiResponse`, {
+          mailId: mail.id,
+          mailText: `Subject: ${res.data.subject}, Body: ${res.data.text}`,
+        });
+        const { categoryId, mailId, aiResponse } = aiRes.data;
+        addResponse({ categoryId, mailId, aiResponse: JSON.parse(aiResponse) });
+      } else {
+        deleteMail(mail.id);
+      }
     }
   };
 
@@ -71,7 +78,9 @@ export const EmailPreview = ({ mail }: EmailPreviewProps) => {
   }
   return (
     <div
-      className={`${mail?.receivedDateTime && "border-b-2"} cursor-pointer ${
+      className={`relative ${
+        mail?.receivedDateTime && "border-b-2"
+      } cursor-pointer ${
         mail.id === selectedMail?.id ? "bg-gray-200" : "hover:bg-gray-100"
       } px-6 py-2`}
       onClick={() => {

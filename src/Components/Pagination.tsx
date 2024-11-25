@@ -27,6 +27,7 @@ export const Pagination = ({ category }: PaginationType) => {
 
   const [nextLoading, setNextLoading] = useState(false);
   const categories = useCategoryStore((s) => s.categories);
+  console.log(mails, nextPageToken)
 
   const nextPage = async () => {
     setSelectedMail(null);
@@ -59,6 +60,7 @@ export const Pagination = ({ category }: PaginationType) => {
             nextPageToken ? `&nextPageToken=${nextPageToken}` : ""
           }`
       );
+      console.log(res.data)
       if (res.data.resultSizeEstimate == 0) {
         // setMails([]);
       } else {
@@ -125,7 +127,7 @@ export const Pagination = ({ category }: PaginationType) => {
   return (
     <div className="shadow-inner p-1 flex justify-end items-center gap-4">
       <div className="text-sm font-light">
-        {page * 20 + 1} - {page * 20 + 20}
+        {page * mailsPerPage + 1} - {page * mailsPerPage + mailsPerPage}
       </div>
       <div className="flex gap-2">
         <div
