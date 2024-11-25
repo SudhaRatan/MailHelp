@@ -7,7 +7,7 @@ export const SignIn = () => {
       <div className="w-[70%] bg-white h-[90%] rounded-[3%] flex p-20 gap-10 items-start justify-between">
         <div className="flex-col flex h-full w-full gap-[50px]">
           <div className="flex items-center gap-3">
-            <img src="/src/assets/Icon.png" className="h-10 w-10" />
+            <img src="/assets/Icon.png" className="h-10 w-10" />
             <p className="text-[20px]">Mail Assistant</p>
           </div>
           <p className="font-bold text-[40px]">Get Started</p>
@@ -28,20 +28,20 @@ export const SignIn = () => {
             onPointerLeaveCapture={() => {}}
           >
             <img
-              src="/src/assets/Carousel1.jpg"
+              src="/assets/Carousel1.jpg"
               alt="image 1"
               className="h-full w-full object-cover"
               width={"100%"}
             />
             <img
               width={"100%"}
-              src="/src/assets/carousel 2.jpg"
+              src="/assets/carousel 2.jpg"
               alt="image 2"
               className="h-full w-full object-cover"
             />
             <img
               width={"100%"}
-              src="/src/assets/20943953.jpg"
+              src="/assets/20943953.jpg"
               alt="image 3"
               className="h-full w-full object-cover"
             />
