@@ -6,7 +6,6 @@ import { formatDate } from "../Utils/DateUtil";
 import { useAiResponsesStore } from "../Stores/aiResponsesStore";
 import { LuDot } from "react-icons/lu";
 import colors from "tailwindcss/colors";
-import { useAuthStore } from "../Stores/authStore";
 
 interface EmailPreviewProps {
   mail: mail;
@@ -15,13 +14,11 @@ interface EmailPreviewProps {
 export const EmailPreview = ({ mail }: EmailPreviewProps) => {
   const mails = useMailStore((s) => s.mails);
   const updateMail = useMailStore((s) => s.updateMail);
-  const deleteMail = useMailStore((s) => s.deleteMail);
   const setSelectedMail = useMailStore((s) => s.setSelectedMail);
   const selectedMail = useMailStore((s) => s.selectedMail);
   const updateReply = useMailStore((s) => s.updateReply);
   const addResponse = useAiResponsesStore((s) => s.addResponse);
   const [read, setRead] = useState<boolean>(true);
-  const tokenInfo = useAuthStore((state) => state.tokenInfo);
 
   const getMailData = async () => {
     const mailData = mails?.find((i) => i.id == mail.id);
