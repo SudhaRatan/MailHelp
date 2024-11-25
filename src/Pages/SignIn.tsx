@@ -3,7 +3,7 @@ import { Carousel } from "@material-tailwind/react";
 
 export const SignIn = () => {
   return (
-    <div className="w-full h-[100dvh] flex items-center justify-center bg-[url('./assets/BackgroundImg.png')]">
+    <div className="w-full h-[100dvh] flex items-center justify-center bg-[url('/assets/BackgroundImg.png')]">
       <div className="w-[70%] bg-white h-[90%] rounded-[3%] flex p-20 gap-10 items-start justify-between">
         <div className="flex-col flex h-full w-full gap-[50px]">
           <div className="flex items-center gap-3">
