@@ -146,7 +146,7 @@ export const Home = () => {
           {/* Header */}
           <div className="flex items-center justify-between p-3 pt-[13%]">
             <div className="flex items-start gap-2">
-              <img src="/src/assets/Icon.png" className="h-8 w-8" />
+              <img src="/assets/Icon.png" className="h-8 w-8" />
               <p className="text-2xl font-semibold">Mail</p>
             </div>
           </div>
