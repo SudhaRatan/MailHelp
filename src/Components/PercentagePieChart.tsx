@@ -26,8 +26,6 @@ const PercentagePieChart = ({data}: any) => {
     midAngle,
     innerRadius,
     outerRadius,
-    percent,
-    index,
     name,
     percentage,
   }: any) => {
@@ -63,7 +61,7 @@ const PercentagePieChart = ({data}: any) => {
             fill="#8884d8"
             dataKey="value"
           >
-            {processedData.map((entry:any, index:any) => (
+            {processedData.map((_entry:any, index:any) => (
               <Cell
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}
@@ -71,7 +69,7 @@ const PercentagePieChart = ({data}: any) => {
             ))}
           </Pie>
           <Tooltip
-            formatter={(value, name, props) => [
+            formatter={(_value, name, props) => [
               `${props.payload.percentage}%`,
               name,
             ]}
